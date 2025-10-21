@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://bb5j4byhyt125"]
+
+[ext_resource type="Script" uid="uid://dh5gsbc8yvwgn" path="res://InventoryUI.cs" id="1_1utc3"]
+[ext_resource type="Texture2D" uid="uid://dewnseke6e0q1" path="res://art/Assets/UI/Inventry_UI.png" id="2_exi7u"]
+
+[node name="InventoryUI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_1utc3")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_exi7u")
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+
+[node name="GridContainer" type="GridContainer" parent="NinePatchRect"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 4

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PlayerInventory" load_steps=4 format=3 uid="uid://d3j3i8l26tndd"]
+
+[ext_resource type="Script" uid="uid://cagff28kmg5gd" path="res://scripts/ItemData.cs" id="1_j6jse"]
+[ext_resource type="Resource" uid="uid://bbkpw1bpfawr0" path="res://items/apple.tres" id="2_lwyi4"]
+[ext_resource type="Script" uid="uid://bsmq0d58fdexd" path="res://scripts/PlayerInventory.cs" id="2_mga42"]
+
+[resource]
+script = ExtResource("2_mga42")
+Items = Array[ExtResource("1_j6jse")]([ExtResource("2_lwyi4"), null, null, ExtResource("2_lwyi4"), null, null, null, null, null, ExtResource("2_lwyi4"), null, null])
+metadata/_custom_type_script = "uid://bsmq0d58fdexd"

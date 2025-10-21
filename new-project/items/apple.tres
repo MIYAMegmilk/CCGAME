@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bbkpw1bpfawr0"]
+
+[ext_resource type="Script" uid="uid://cagff28kmg5gd" path="res://scripts/ItemData.cs" id="1_pv0u0"]
+
+[resource]
+script = ExtResource("1_pv0u0")
+Name = "apple"
+Description = "リンゴ"
+metadata/_custom_type_script = "uid://cagff28kmg5gd"
