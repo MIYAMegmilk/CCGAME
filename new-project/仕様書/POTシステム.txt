@@ -1,0 +1,49 @@
+//C#
+
+public class Item
+{
+	[Export] public string Name { get; set; }
+	[Export] public int Price { get; set; }
+	[Export] public bool IsUsableInCombat { get; set; }
+}
+
+// --- ここからMainメソッドの中 ---
+
+// 1. アイテムを管理するための、空のリストを1つ準備
+List<Item> inventory = new List<Item>();
+
+// 2. 「やくそう」オブジェクトを作成し、プロパティに値を設定
+Item potion = new Item(); // Itemクラスの設計図から、新しいオブジェクトを1つ作成
+potion.Name = "やくそう";
+potion.Price = 10;
+potion.IsUsableInCombat = true;
+
+// 3. 作成した「やくそう」オブジェクトをリストに追加
+inventory.Add(potion);
+
+// 4. 「てつのつるぎ」オブジェクトも同様に作成
+Item sword = new Item();
+sword.Name = "てつのつるぎ";
+sword.Price = 150;
+sword.IsUsableInCombat = false;
+
+// 5. 「てつのつるぎ」オブジェクトもリストに追加
+inventory.Add(sword);
+
+// 6. 最後に、リストの中身をすべて表示
+Console.WriteLine("--- アイテム一覧 ---");
+foreach (Item currentItem in inventory)
+{
+	// bool値によって表示を切り替えるための変数を準備
+	string combatText;
+	if (currentItem.IsUsableInCombat == true)
+	{
+		combatText = "可";
+	}
+	else
+	{
+		combatText = "不可";
+	}
+
+	Console.WriteLine($"アイテム名: {currentItem.Name} [価格: {currentItem.Price}G] (戦闘中使用: {combatText})");
+}
