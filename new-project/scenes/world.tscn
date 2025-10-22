@@ -110,9 +110,9 @@ y_sort_enabled = true
 [node name="Control" parent="." instance=ExtResource("6_qfnet")]
 
 [node name="player" parent="." instance=ExtResource("4_i7141")]
+PushForce = 700.0
 MaxMana = 100.0
 Mana = 1.0
-PushForce = 700.0
 
 [node name="enemy" parent="." instance=ExtResource("5_71j4m")]
 PushForce = 700.0
