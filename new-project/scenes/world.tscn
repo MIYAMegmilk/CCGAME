@@ -16,6 +16,7 @@ Mana = 1.0
 PushForce = 700.0
 
 [node name="enemy" parent="." instance=ExtResource("5_71j4m")]
+position = Vector2(1, 12)
 PushForce = 700.0
 
 [node name="Node2D" type="Node2D" parent="."]

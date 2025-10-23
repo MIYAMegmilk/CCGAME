@@ -15,8 +15,8 @@ public partial class WorldManager : Node2D
 
 	[Export] public ulong WorldSeed { get; set; } = 12345;
 
-	private const int MAP_WIDTH = 256;
-	private const int MAP_HEIGHT = 256;
+	private const int MAP_WIDTH = 64;
+	private const int MAP_HEIGHT = 64;
 
 	public override void _Ready()
 	{
@@ -48,7 +48,7 @@ public partial class WorldManager : Node2D
 				Vector2I tileMapCoords = new Vector2I(x - offsetX, y - offsetY);
 
 				// ★ 割り当てを逆にする
-				if (mapData[x, y] == 1) // 1 = 壁
+				if (mapData[x, y] == 0) // 1 = 壁
 				{
 					// TerrainLayerに壁タイルを配置
 					TerrainLayer.SetCell(tileMapCoords, TileSourceId, WallTileAtlasCoords);

@@ -1,16 +1,41 @@
-[gd_scene load_steps=3 format=3 uid="uid://np3kiafbuo15"]
+[gd_scene load_steps=7 format=3 uid="uid://np3kiafbuo15"]
 
 [ext_resource type="Script" uid="uid://d3cp10daax0pj" path="res://WorldManager.cs" id="1_036b0"]
-[ext_resource type="TileSet" uid="uid://kyxjpvtinqhd" path="res://terrain_tileset.tres" id="2_fj7yv"]
+[ext_resource type="Texture2D" uid="uid://diaphfvmggihw" path="res://art/Assets/Tiles/tileset.png" id="2_fj7yv"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tlwt5"]
+texture = ExtResource("2_fj7yv")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_aqk2v"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_tlwt5")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_036b0"]
+texture = ExtResource("2_fj7yv")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_dwbse"]
+sources/0 = SubResource("TileSetAtlasSource_036b0")
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("TerrainLayer", "WallLayer")]
 script = ExtResource("1_036b0")
 TerrainLayer = NodePath("TerrainLayer")
 WallLayer = NodePath("WallTileMap")
-WorldSeed = 1
+WallTileAtlasCoords = Vector2i(3, 0)
+FloorTileAtlasCoords = Vector2i(0, 0)
+WorldSeed = 2
 
 [node name="TerrainLayer" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0)
-tile_set = ExtResource("2_fj7yv")
+tile_set = SubResource("TileSet_aqk2v")
 
 [node name="WallTileMap" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_dwbse")

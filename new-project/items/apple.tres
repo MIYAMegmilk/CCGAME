@@ -5,5 +5,4 @@
 [resource]
 script = ExtResource("1_pv0u0")
 Name = "apple"
-Description = "リンゴ"
 metadata/_custom_type_script = "uid://cagff28kmg5gd"
