@@ -1,0 +1,31 @@
+[gd_resource type="TileSet" load_steps=9 format=3 uid="uid://kyxjpvtinqhd"]
+
+[ext_resource type="Texture2D" uid="uid://bvxpjxfi334jh" path="res://art/Assets/Tiles/dirt.png" id="1_dqicv"]
+[ext_resource type="Texture2D" uid="uid://bqjoio1ymln3u" path="res://art/Assets/Tiles/grass.png" id="2_ucqu7"]
+[ext_resource type="Texture2D" uid="uid://b57kam10xhovx" path="res://art/Assets/Tiles/sand.png" id="3_60f41"]
+[ext_resource type="Texture2D" uid="uid://dlj4kvioaygm3" path="res://art/Assets/Tiles/stone.png" id="4_gwuyq"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wse8f"]
+texture = ExtResource("1_dqicv")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ic0uy"]
+texture = ExtResource("2_ucqu7")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k3n1d"]
+texture = ExtResource("3_60f41")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2o6r5"]
+texture = ExtResource("4_gwuyq")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[resource]
+physics_layer_0/collision_layer = 1
+physics_layer_1/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_wse8f")
+sources/1 = SubResource("TileSetAtlasSource_ic0uy")
+sources/2 = SubResource("TileSetAtlasSource_k3n1d")
+sources/3 = SubResource("TileSetAtlasSource_2o6r5")

@@ -36,7 +36,7 @@ public partial class Player : CharacterBody2D
 	private Area2D _pushArea;
 	
 	[Export]
-	public float PushForce { get; set; } = 300.0f;
+	public float PushForce { get; set; } = 1000.0f;
 
 	// ゲーム開始時に一度だけ呼ばれるメソッド
 	public override void _Ready()

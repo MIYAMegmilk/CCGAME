@@ -22,7 +22,7 @@ public partial class Enemy : CharacterBody2D
 
 	// 【追加】押し合いの力の強さ
 	[Export]
-	public float PushForce { get; set; } = 150.0f;
+	public float PushForce { get; set; } = 1000.0f;
 
 	public override void _Ready()
 	{

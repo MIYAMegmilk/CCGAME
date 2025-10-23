@@ -146,7 +146,6 @@ radius = 7.0
 position = Vector2(70, 49)
 collision_layer = 4
 script = ExtResource("1_hbeq5")
-PushForce = 1000.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_g2u8i")
