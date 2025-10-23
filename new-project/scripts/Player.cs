@@ -208,7 +208,7 @@ public partial class Player : CharacterBody2D
 			Mana = Mathf.Clamp(Mana + ManaRegene, 0, MaxMana);
 			manaWasChanged = true;
 		}
-
+	
 		// --- シグナルの発行 ---
 		// 実際に変更があった場合のみ、シグナルを発行する
 		if (healthWasChanged)
@@ -219,5 +219,14 @@ public partial class Player : CharacterBody2D
 		{
 			EmitSignal(SignalName.ManaChanged, Mana, MaxMana);
 		}
+	}
+	// アイテムを持たせる
+	//node2Dで定義した関数を呼び出す
+	if(//インベントリの初めのアイテムが変わったとき
+	){	
+		my_new_sprite.queue_free()
+		var my_texture_path = "インベントリの初めのアイテムの画像"
+		var spawn_position = Vector2(300, 200)
+		var my_new_sprite = create_sprite(my_texture_path, spawn_position)
 	}
 }

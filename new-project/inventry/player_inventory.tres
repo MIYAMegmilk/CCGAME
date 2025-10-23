@@ -5,4 +5,5 @@
 
 [resource]
 script = ExtResource("2_8h41w")
+Slots = Array[ExtResource("1_hl5a7")]([null])
 metadata/_custom_type_script = "uid://gu6rkld17u8p"
