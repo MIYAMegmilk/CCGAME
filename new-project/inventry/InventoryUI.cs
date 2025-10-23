@@ -1,152 +1,140 @@
 // InventoryUI.cs
 using Godot;
-using System.Collections.Generic; // List<T> を使うために必要
+using System.Collections.Generic;
 
-/// <summary>
-/// インベントリ全体のUIを管理するクラス。
-/// PlayerInventoryデータに基づいてスロットUIを生成し、
-/// ホットバーとメインインベントリのグリッドに配置します。
-/// </summary>
 public partial class InventoryUI : CanvasLayer
 {
-	// --- インスペクターから設定する変数 ---
-
+	// --- インスペクター設定 ---
 	[Export(PropertyHint.File, "*.tres")]
-	public PlayerInventory InventoryData { get; set; } // PlayerInventory.tres (データ本体)
+	public PlayerInventory InventoryData { get; set; }
 
 	[Export(PropertyHint.File, "*.tscn")]
-	public PackedScene InventorySlotScene { get; set; } // InventorySlotUI.tscn (スロット1個のUI)
+	public PackedScene InventorySlotScene { get; set; }
 
-	// --- コンテナへの参照 (インスペクターから設定) ---
-
-	[Export] // ← カッコと中身を削除
-	private GridContainer _hotbarGrid;
-
-	[Export] // ← カッコと中身を削除
-	private Control _fullInventoryContainer;
-
-	[Export] // ← カッコと中身を削除
-	private GridContainer _mainInventoryGrid;
+	[Export] private GridContainer _hotbarGrid; // Columns = 9
+	[Export] private Control _fullInventoryContainer;
+	[Export] private GridContainer _mainInventoryGrid; // Columns = 9
 
 	// --- 内部変数 ---
-
-	// 生成したスロットUIのインスタンスをすべて保持するリスト
 	private List<InventorySlotUI> _uiSlots = new List<InventorySlotUI>();
+	private int _currentlySelectedHotbarIndex = -1;
 
-	/// <summary>
-	/// ゲーム開始時に一度だけ呼ばれる
-	/// </summary>
 	public override void _Ready()
 	{
-		// 1. 必要なリソースが設定されているか確認
-		if (InventoryData == null || InventorySlotScene == null)
+		// 必須項目のチェック
+		if (InventoryData == null || InventorySlotScene == null ||
+			_hotbarGrid == null || _fullInventoryContainer == null || _mainInventoryGrid == null)
 		{
-			GD.PrintErr("InventoryUI: [Export] に InventoryData または InventorySlotScene が設定されていません。");
-			return;
-		}
-		if (_hotbarGrid == null || _fullInventoryContainer == null || _mainInventoryGrid == null)
-		{
-			GD.PrintErr("InventoryUI: [Export] にグリッドの参照が設定されていません。");
+			GD.PrintErr("InventoryUI: [Export] に必要なノードまたはリソースが設定されていません。");
+			SetProcess(false); // エラー時は以降の処理を停止
+			SetPhysicsProcess(false);
 			return;
 		}
 
-		// 2. UIの初期状態を設定
-		_fullInventoryContainer.Visible = false;
+		_fullInventoryContainer.Visible = false; // 初期は非表示
 
-		// 3. データのスロット数をインスペクターの設定値に合わせる
 		InventoryData.InitializeSlots();
-
-		// 4. UIスロットを生成し、グリッドに配置する
 		GenerateSlotUIs();
 
-		// 5. データが変更されたら、UIも更新するようにシグナルを接続
-		InventoryData.InventoryChanged += UpdateAllSlots;
+		// Playerからのシグナル接続
+		// Playerノードのパスは環境に合わせて変更してください (例: GetNode<Player>("/root/World/Player"))
+		Player player = GetParent<Player>(); // "player"グループを使う場合
+		// Player player = GetNode<Player>("../Player"); // Playerが親の場合
+		if (player != null)
+		{
+			player.HotbarSelectionChanged += OnHotbarSelectionChanged;
+			OnHotbarSelectionChanged(player.GetSelectedHotbarIndex()); // 初期選択を反映
+		}
+		else
+		{
+			GD.PrintErr("InventoryUI: Playerノードが見つかりません。シグナル接続に失敗しました。");
+		}
+
+		// データ変更シグナル接続
+		if (InventoryData != null) // nullチェックを追加
+		{
+			InventoryData.InventoryChanged += UpdateAllSlots;
+		}
 	}
 
-	/// <summary>
-	/// 毎フレーム呼ばれる
-	/// </summary>
 	public override void _Process(double delta)
 	{
-		// "inventory_toggle"キー（Iキーなど）が押されたら
+		// インベントリ開閉
 		if (Input.IsActionJustPressed("inventory_toggle"))
 		{
-			// フルインベントリの表示/非表示を切り替える
 			_fullInventoryContainer.Visible = !_fullInventoryContainer.Visible;
+			// ホットバーはフル表示中は隠す場合
+			// _hotbarContainer.Visible = !_fullInventoryContainer.Visible;
 		}
 	}
 
 	/// <summary>
-	/// 既存のUIスロットをすべて安全に削除し、
-	/// PlayerInventoryのデータに基づいて再生成する
+	/// UIスロットを生成・再生成する
 	/// </summary>
 	private void GenerateSlotUIs()
 	{
-		// 1. 内部の参照リストをクリア
 		_uiSlots.Clear();
+		// 安全な削除
+		while (_hotbarGrid.GetChildCount() > 0) { Node c = _hotbarGrid.GetChild(0); _hotbarGrid.RemoveChild(c); c.QueueFree(); }
+		while (_mainInventoryGrid.GetChildCount() > 0) { Node c = _mainInventoryGrid.GetChild(0); _mainInventoryGrid.RemoveChild(c); c.QueueFree(); }
 
-		// 2. ホットバーの既存の子ノード（スロットUI）を安全に削除
-		while (_hotbarGrid.GetChildCount() > 0)
-		{
-			Node child = _hotbarGrid.GetChild(0);
-			_hotbarGrid.RemoveChild(child);
-			child.QueueFree();
-		}
-
-		// 3. メインインベントリの既存の子ノードを安全に削除
-		while (_mainInventoryGrid.GetChildCount() > 0)
-		{
-			Node child = _mainInventoryGrid.GetChild(0);
-			_mainInventoryGrid.RemoveChild(child);
-			child.QueueFree();
-		}
-
-		// 4. データに基づいて新しいスロットUIを生成
 		int totalSlots = InventoryData.GetTotalSlotCount();
-
 		for (int i = 0; i < totalSlots; i++)
 		{
-			// スロットUI (InventorySlotUI.tscn) をインスタンス化
 			InventorySlotUI slotUI = InventorySlotScene.Instantiate<InventorySlotUI>();
-			
-			// 内部リストに追加
 			_uiSlots.Add(slotUI);
 
-			// 5. ホットバー用かメインインベントリ用かを判断して配置
 			if (i < InventoryData.HotbarSize)
 			{
-				// iがホットバーのサイズ未満なら、_hotbarGrid に追加
 				_hotbarGrid.AddChild(slotUI);
 			}
 			else
 			{
-				// それ以外は、_mainInventoryGrid に追加
 				_mainInventoryGrid.AddChild(slotUI);
 			}
 		}
-		
-		// 6. 最後に、すべてのスロットの表示を更新
-		UpdateAllSlots();
+		UpdateAllSlots(); // 表示を更新
 	}
 
 	/// <summary>
-	/// PlayerInventoryのデータに基づいて、すべてのUIスロットの見た目を更新する
-	/// (InventoryChangedシグナルから呼ばれる)
+	/// 全てのUIスロットの表示を更新する
 	/// </summary>
 	private void UpdateAllSlots()
 	{
 		int totalSlots = InventoryData.GetTotalSlotCount();
-
 		for (int i = 0; i < totalSlots; i++)
 		{
-			// データとUIの数が合わない場合はエラーを防ぐために中断
-			if (i >= _uiSlots.Count || i >= InventoryData.Slots.Count)
-			{
-				break;
-			}
-
-			// 対応するUIスロットに、対応するスロットデータを渡して更新を依頼
+			if (i >= _uiSlots.Count || i >= InventoryData.Slots.Count) break;
 			_uiSlots[i].UpdateSlot(InventoryData.Slots[i]);
+		}
+		// ハイライトも再適用
+		OnHotbarSelectionChanged(_currentlySelectedHotbarIndex);
+	}
+
+	/// <summary>
+	/// Playerからホットバー選択変更の通知を受け取る
+	/// </summary>
+	private void OnHotbarSelectionChanged(int newIndex)
+	{
+		// 以前の選択を解除
+		if (_currentlySelectedHotbarIndex >= 0 && _currentlySelectedHotbarIndex < _uiSlots.Count)
+		{
+			 // ホットバーの範囲内のみハイライト解除
+			 if (_currentlySelectedHotbarIndex < InventoryData.HotbarSize)
+			 {
+				 _uiSlots[_currentlySelectedHotbarIndex].SetHighlight(false);
+			 }
+		}
+
+		// 新しいスロットをハイライト (ホットバーの範囲内のみ)
+		if (newIndex >= 0 && newIndex < InventoryData.HotbarSize && newIndex < _uiSlots.Count)
+		{
+			_uiSlots[newIndex].SetHighlight(true);
+			_currentlySelectedHotbarIndex = newIndex;
+		}
+		else
+		{
+			_currentlySelectedHotbarIndex = -1; // 無効な場合は選択なし状態に
 		}
 	}
 }

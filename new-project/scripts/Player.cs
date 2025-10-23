@@ -1,223 +1,295 @@
-//Player.cs
 using Godot;
 using System;
 
 public partial class Player : CharacterBody2D
 {
-	// [Export]を付けるとGodotエディタのインスペクターから値を変更できるようになります
+	// --- インスペクター設定 ---
 	[ExportGroup("Stats")]
-	[Export]
-	public float Speed { get; set; } = 100.0f;
-	[Export]
-	public float MaxHealth {get; set;} = 50.0f;
-	[Export]
-	public float Health {get; set;} = 10.0f;
-	[Export]
-	public float HPRegene {get;set;} = 1.0f;//毎秒の回復寮
-	[Export]
-	public float MaxMana {get; set;} = 30.0f;
-	[Export]
-	public float Mana {get; set;} = 0.0f;
-	[Export]
-	public float ManaRegene {get;set;} = 0.5f;//毎秒の回復寮
-	
-	[Signal]
-	public delegate void HealthChangedEventHandler(float currentHealth, float maxHealth);
-	[Signal]
-	public delegate void ManaChangedEventHandler(float currentMana, float maxMana);
-	
+	[Export] public float Speed { get; set; } = 100.0f;
+	[Export] public float MaxHealth { get; set; } = 50.0f;
+	[Export] public float Health { get; set; } = 10.0f;
+	[Export] public float HPRegene { get; set; } = 1.0f; //毎秒の回復量
+	[Export] public float MaxMana { get; set; } = 30.0f;
+	[Export] public float Mana { get; set; } = 0.0f;
+	[Export] public float ManaRegene { get; set; } = 0.5f; //毎秒の回復量
+	[Export] public float PushForce { get; set; } = 1000.0f;
 
-	// アニメーション用のノードを保持する変数
+	[ExportGroup("Inventory")]
+	[Export] public PlayerInventory InventoryData { get; set; } // ★ インベントリデータ (player_inventory.tres)
+	[Export] private Sprite2D _heldItemSprite;     // ★ 手元アイテム表示用
+	[Export] private InventoryUI _inventoryUI;     // ★ Playerの子にあるInventoryUI
+
+	// ---- シグナル ----
+	[Signal] public delegate void HealthChangedEventHandler(float currentHealth, float maxHealth);
+	[Signal] public delegate void ManaChangedEventHandler(float currentMana, float maxMana);
+	[Signal] public delegate void HotbarSelectionChangedEventHandler(int newIndex); // ★ ホットバー選択変更
+
+	// ---- 内部変数 ----
 	private AnimatedSprite2D _animatedSprite;
-	
-	// プレイヤーが停止したときに、最後に向いていた方向を記憶するための変数
-	private Vector2 _lastDirection = new Vector2(0, 1); // 初期値は下向き
-	
 	private Area2D _pushArea;
-	
-	[Export]
-	public float PushForce { get; set; } = 1000.0f;
+	private Vector2 _lastDirection = new Vector2(0, 1); // 初期値は下向き
+	private int _selectedHotbarIndex = 0; // ★ 現在選択中のホットバースロット (0から始まる)
 
-	// ゲーム開始時に一度だけ呼ばれるメソッド
+	// --- Godotメソッド ---
 	public override void _Ready()
 	{
-		// 子ノードであるAnimatedSprite2Dを取得して変数に保存しておく
+		// 子ノードを取得
 		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_pushArea = GetNode<Area2D>("PushArea");
-		
+		_heldItemSprite = GetNode<Sprite2D>("HeldItemSprite"); // ★ Sprite2Dを取得
+		_inventoryUI = GetNode<InventoryUI>("InventoryUI"); // ★ パスが正しいか確認
+
+		// インベントリ関連の初期化
+		if (InventoryData != null)
+		{
+			InventoryData.InitializeSlots();
+			InventoryData.InventoryChanged += UpdateHeldItemDisplay; // データ変更時も更新
+		}
+		else
+		{
+			 GD.PrintErr("Player: InventoryDataが設定されていません！");
+		}
+
+		if (_inventoryUI != null)
+		{
+			_inventoryUI.Visible = false; // 初期は非表示
+		}
+		else
+		{
+			 GD.PrintErr("Player: InventoryUIが設定されていません！");
+		}
+
+		UpdateHeldItemDisplay(); // 手元アイテムの初期表示
+		EmitSignal(SignalName.HotbarSelectionChanged, _selectedHotbarIndex); // UIに初期選択を通知
+
+		// HP/Manaの初期シグナル発行
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
 		EmitSignal(SignalName.ManaChanged, Mana, MaxMana);
 	}
 
-	// 物理演算フレームごとに呼ばれるメソッド
+	public override void _Input(InputEvent @event)
+	{
+		// マウスホイール処理
+		if (@event is InputEventMouseButton mouseButtonEvent && mouseButtonEvent.IsPressed())
+		{
+			HandleMouseWheel(mouseButtonEvent);
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
-	
-		// 1. 入力を取得
+		// 入力取得
 		Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
 		Vector2 currentVelocity = Velocity;
 
-		// 2. 速度を計算
+		// 速度計算
 		if (direction != Vector2.Zero)
 		{
-			// 入力がある場合、その方向に移動
 			currentVelocity = direction * Speed;
-			_lastDirection = direction; // 最後に向いていた方向を更新
+			_lastDirection = direction;
 		}
 		else
 		{
-			// 【修正点】入力がない場合、速度を0に「近づける」（減速）
-			// これにより、他の力（押し合い）が Velocity に影響できるようにします。
-			// `5.0f` の部分を調整すると、滑り具合（慣性）が変わります。
 			currentVelocity = currentVelocity.MoveToward(Vector2.Zero, Speed * (float)delta * 5.0f);
 		}
-
-		// 3. 移動と衝突処理を実行
-		
-		
 		Velocity = currentVelocity;
 
-
-		// 3. 【修正点】押し合い処理を "MoveAndSlide" の "前" に移動
+		// 押し合い処理
 		HandlePushing((float)delta);
-
-		// 4. 移動と衝突処理を実行
-		// HandlePushing で変更された最終的な Velocity を使って移動する
+		// 移動と衝突
 		MoveAndSlide();
-		
-
-		
-		// 5. 状態に合わせてアニメーションを更新 (direction は元の入力を使う)
+		// アニメーション更新
 		UpdateAnimation(direction);
+
+		// --- フレーム処理に追加 ---
+		HandleInventoryInput();     // インベントリ開閉 (Iキー)
+		HandleHotbarNumberKeys(); // 数字キー選択
+		UpdateHeldItemPosition(); // 手元アイテム位置調整 (オプション)
+		// -------------------------
 	}
 
+	// --- 入力処理 (ホットバー/インベントリ) ---
+	private void HandleMouseWheel(InputEventMouseButton mouseButtonEvent)
+	{
+		int previousIndex = _selectedHotbarIndex;
+		// nullチェックを追加し、HotbarSizeが見つからない場合のエラーを防ぐ
+		int hotbarSize = InventoryData?.HotbarSize ?? 0;
+		if (hotbarSize <= 0) return; // ホットバーがない場合は何もしない
+
+		if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
+		{
+			_selectedHotbarIndex = (_selectedHotbarIndex - 1 + hotbarSize) % hotbarSize; // 左へラップ
+		}
+		else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
+		{
+			_selectedHotbarIndex = (_selectedHotbarIndex + 1) % hotbarSize; // 右へラップ
+		}
+
+		if (previousIndex != _selectedHotbarIndex)
+		{
+			UpdateHeldItemDisplay();
+			EmitSignal(SignalName.HotbarSelectionChanged, _selectedHotbarIndex);
+		}
+	}
+
+	private void HandleHotbarNumberKeys()
+	{
+		int previousIndex = _selectedHotbarIndex;
+		int hotbarSize = InventoryData?.HotbarSize ?? 0;
+		if (hotbarSize <= 0) return;
+
+		for (int i = 0; i < hotbarSize; i++)
+		{
+			// "slot_1" から "slot_9" (または hotbarSize) までのアクションをチェック
+			if (Input.IsActionJustPressed($"slot_{i + 1}"))
+			{
+				_selectedHotbarIndex = i;
+				break;
+			}
+		}
+
+		if (previousIndex != _selectedHotbarIndex)
+		{
+			UpdateHeldItemDisplay();
+			EmitSignal(SignalName.HotbarSelectionChanged, _selectedHotbarIndex);
+		}
+	}
+
+	private void HandleInventoryInput()
+	{
+		if (Input.IsActionJustPressed("inventory_toggle") && _inventoryUI != null)
+		{
+			_inventoryUI.Visible = !_inventoryUI.Visible;
+			// GetTree().Paused = _inventoryUI.Visible; // 必要なら一時停止
+		}
+	}
+
+	// --- アイテム表示 ---
+	private void UpdateHeldItemDisplay()
+	{
+		// 必要な参照がnullでないか、インデックスが範囲内かを確認
+		if (InventoryData == null || _heldItemSprite == null ||
+			InventoryData.Slots == null || InventoryData.Slots.Count <= _selectedHotbarIndex)
+		{
+			if (_heldItemSprite != null) _heldItemSprite.Visible = false; // 安全のため非表示
+			return;
+		}
+
+		InventorySlot selectedSlot = InventoryData.Slots[_selectedHotbarIndex];
+
+		// スロットデータ自体がnullの場合もチェック (InitializeSlots直後など)
+		if (selectedSlot == null || selectedSlot.IsEmpty())
+		{
+			_heldItemSprite.Visible = false;
+		}
+		else
+		{
+			_heldItemSprite.Visible = true;
+			_heldItemSprite.Texture = selectedSlot.Item.Texture;
+		}
+	}
+
+	// 手持ちアイテムの位置をプレイヤーの向きに合わせる (オプション)
+	private void UpdateHeldItemPosition()
+	{
+		if (_heldItemSprite == null || _animatedSprite == null) return;
+		// 例: プレイヤーが左を向いていたらアイテムも反転させる
+		_heldItemSprite.Scale = new Vector2(_animatedSprite.FlipH ? -1 : 1, 1);
+		// 例: プレイヤーの少し前に表示 (位置は調整してください)
+		// _heldItemSprite.Position = new Vector2(10 * (_animatedSprite.FlipH ? -1 : 1), 0);
+	}
+
+	// --- 既存のメソッド ---
 	private void UpdateAnimation(Vector2 direction)
 	{
+		// ... (内容は変更なし) ...
 		if (_animatedSprite == null) return;
-		
 		bool isMoving = direction != Vector2.Zero;
-
 		if (isMoving)
 		{
-			// ---- 移動中のアニメーション ----
-			
-			// Mathf.Abs() で方向の絶対値（強さ）を取得して比較する
 			if (Mathf.Abs(direction.Y) > Mathf.Abs(direction.X))
 			{
-				// Y軸（上下）の入力がX軸（左右）より強い場合
-				if (direction.Y < 0)
-				{
-					_animatedSprite.Play("back_walk");
-				}
-				else
-				{
-					_animatedSprite.Play("front_walk");
-				}
+				if (direction.Y < 0){_animatedSprite.Play("back_walk");}
+				else{_animatedSprite.Play("front_walk");}
 			}
 			else
 			{
-				// X軸（左右）の入力がY軸より強い（または等しい）場合
 				_animatedSprite.Play("side_walk");
 			}
-
-			// 左右の向きに応じてスプライトを反転
-			if (direction.X != 0)
-			{
-				_animatedSprite.FlipH = direction.X < 0; 
-			}
+			if (direction.X != 0){_animatedSprite.FlipH = direction.X < 0;}
 		}
 		else
 		{
-			// ---- 停止中（アイドル）のアニメーション ----
-			// 最後に移動していた方向に応じてアイドルアニメーションを再生
-			// (こちらのロジックも、移動中と合わせるため Abs で比較するように変更)
 			if (Mathf.Abs(_lastDirection.Y) > Mathf.Abs(_lastDirection.X))
 			{
-				 if (_lastDirection.Y < 0)
-				{
-					_animatedSprite.Play("back_idle");
-				}
-				else
-				{
-					_animatedSprite.Play("front_idle");
-				}
+				 if (_lastDirection.Y < 0){_animatedSprite.Play("back_idle");}
+				 else{_animatedSprite.Play("front_idle");}
 			}
 			else
 			{
 				_animatedSprite.Play("side_idle");
-
-				// アイドル時も左右の向きを反映する
-				if (_lastDirection.X != 0)
-				{
-					_animatedSprite.FlipH = _lastDirection.X < 0;
-				}
+				if (_lastDirection.X != 0){_animatedSprite.FlipH = _lastDirection.X < 0;}
 			}
 		}
 	}
-	
+
 	private void HandlePushing(float delta)
 	{
-		// "PushArea" に重なっている "Body" (CharacterBody2D や RigidBody2D) をすべて取得
+		// ... (内容は変更なし) ...
+		if (_pushArea == null) return;
 		var overlappingBodies = _pushArea.GetOverlappingBodies();
-		
 		foreach (Node2D body in overlappingBodies)
 		{
-			// 重なっているのが CharacterBody2D か確認 (Enemy など)
 			if (body is CharacterBody2D otherCharacter)
 			{
-				// 相手から自分への方向ベクトルを計算 (正規化)
-				// (GlobalPosition を使って正確な方向を計算)
 				Vector2 pushDirection = (GlobalPosition - otherCharacter.GlobalPosition).Normalized();
-
-				// 自分の Velocity に押し出す力を加える
-				// (delta を掛けてフレームレートに依存しないようにする)
 				Velocity += pushDirection * PushForce * delta;
 			}
 		}
 	}
+
 	public void Damaged(int amount)
 	{
+		// ... (内容は変更なし) ...
 		Health -= amount;
-		if (Health < 0){
-			Health = 0;
-			Death();
-		}
+		if (Health < 0){ Health = 0; Death();}
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
 	}
+
 	public void Death()
 	{
+		// ... (内容は変更なし) ...
 		GD.Print("Death");
 		_animatedSprite.Play("death");
+		// ここで SetPhysicsProcess(false) などを呼び出して操作不能にする
 	}
+
+	// StateUpdate ノードの timeout シグナルに接続されている想定
 	private void _on_state_update_timeout()
 	{
+		// ... (内容は変更なし) ...
 		bool healthWasChanged = false;
 		bool manaWasChanged = false;
-
-		// --- HP回復処理 ---
 		if(Health < MaxHealth)
 		{
-			// Mathf.Clampを使うと、最大値を超えないように制限するのが簡単です
 			Health = Mathf.Clamp(Health + HPRegene, 0, MaxHealth);
 			healthWasChanged = true;
 		}
-		
-		// --- Mana回復処理 ---
 		if(Mana < MaxMana)
 		{
 			Mana = Mathf.Clamp(Mana + ManaRegene, 0, MaxMana);
 			manaWasChanged = true;
 		}
+		if (healthWasChanged){EmitSignal(SignalName.HealthChanged, Health, MaxHealth);}
+		if (manaWasChanged){EmitSignal(SignalName.ManaChanged, Mana, MaxMana);}
+	}
 
-		// --- シグナルの発行 ---
-		// 実際に変更があった場合のみ、シグナルを発行する
-		if (healthWasChanged)
-		{
-			EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
-		}
-		if (manaWasChanged)
-		{
-			EmitSignal(SignalName.ManaChanged, Mana, MaxMana);
-		}
+	// --- 外部アクセス用 ---
+	/// <summary>
+	/// 現在選択中のホットバーインデックスを取得します
+	/// </summary>
+	public int GetSelectedHotbarIndex()
+	{
+		return _selectedHotbarIndex;
 	}
 }

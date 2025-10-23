@@ -1,8 +1,10 @@
-[gd_scene load_steps=59 format=3 uid="uid://7cgjpj60351h"]
+[gd_scene load_steps=61 format=3 uid="uid://7cgjpj60351h"]
 
 [ext_resource type="Script" uid="uid://c5xg42nxt08ca" path="res://scripts/Player.cs" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://c3doug7hirdqp" path="res://art/characters/player.png" id="2_qhqgy"]
+[ext_resource type="Resource" uid="uid://cwcounq4r0abi" path="res://inventry/player_inventory.tres" id="2_tuyoq"]
 [ext_resource type="PackedScene" uid="uid://bin36pvismwve" path="res://inventry/InventoryUI.tscn" id="3_qhqgy"]
+[ext_resource type="Texture2D" uid="uid://n1l87o7pj0f5" path="res://art/Assets/weapon/wood_sword_texture.png" id="5_qlg0r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hqtel"]
 atlas = ExtResource("2_qhqgy")
@@ -423,18 +425,18 @@ radius = 9.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_dqkch"]
 radius = 5.0
 
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" node_paths=PackedStringArray("_inventoryUI")]
 z_index = 10
 y_sort_enabled = true
 collision_layer = 2
 script = ExtResource("1_g2els")
 Health = 1.0
+InventoryData = ExtResource("2_tuyoq")
+_inventoryUI = NodePath("InventoryUI")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_76oay")
-animation = &"front_attack"
-frame = 1
-frame_progress = 0.39407623
+animation = &"front_idle"
 offset = Vector2(0, -15)
 
 [node name="collision" type="CollisionShape2D" parent="."]
@@ -456,9 +458,13 @@ shape = SubResource("CircleShape2D_dqkch")
 [node name="StateUpdate" type="Timer" parent="."]
 autostart = true
 
-[node name="CanvasLayer" parent="." instance=ExtResource("3_qhqgy")]
+[node name="InventoryUI" parent="." instance=ExtResource("3_qhqgy")]
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="HeldItemSprite" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(7, -4)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_qlg0r")
 
 [connection signal="body_entered" from="player_hitbox" to="." method="_on_player_hitbox_body_entered"]
 [connection signal="body_exited" from="player_hitbox" to="." method="_on_player_hitbox_body_exited"]
