@@ -1,8 +1,23 @@
-[gd_resource type="Resource" script_class="PlayerInventory" load_steps=3 format=3 uid="uid://cwcounq4r0abi"]
+[gd_resource type="Resource" script_class="PlayerInventory" load_steps=7 format=3 uid="uid://cwcounq4r0abi"]
 
 [ext_resource type="Script" uid="uid://tdxv5mmaqv0g" path="res://inventry/InventorySlot.cs" id="1_hl5a7"]
 [ext_resource type="Script" uid="uid://gu6rkld17u8p" path="res://inventry/PlayerInventory.cs" id="2_8h41w"]
+[ext_resource type="Resource" uid="uid://bny8qjleuxmf8" path="res://items/wood_sword.tres" id="2_u0876"]
+[ext_resource type="Resource" uid="uid://bbkpw1bpfawr0" path="res://items/apple.tres" id="3_u0876"]
+
+[sub_resource type="Resource" id="Resource_6qm2h"]
+script = ExtResource("1_hl5a7")
+Item = ExtResource("2_u0876")
+Quantity = 1
+metadata/_custom_type_script = "uid://tdxv5mmaqv0g"
+
+[sub_resource type="Resource" id="Resource_bc7aj"]
+script = ExtResource("1_hl5a7")
+Item = ExtResource("3_u0876")
+Quantity = 3
+metadata/_custom_type_script = "uid://tdxv5mmaqv0g"
 
 [resource]
 script = ExtResource("2_8h41w")
+Slots = Array[ExtResource("1_hl5a7")]([SubResource("Resource_6qm2h"), SubResource("Resource_bc7aj")])
 metadata/_custom_type_script = "uid://gu6rkld17u8p"

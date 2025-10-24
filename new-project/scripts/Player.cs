@@ -36,8 +36,8 @@ public partial class Player : CharacterBody2D
 		// 子ノードを取得
 		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_pushArea = GetNode<Area2D>("PushArea");
-		_heldItemSprite = GetNode<Sprite2D>("HeldItemSprite"); // ★ Sprite2Dを取得
-		_inventoryUI = GetNode<InventoryUI>("InventoryUI"); // ★ パスが正しいか確認
+		_heldItemSprite = GetNode<Sprite2D>("HeldItemSprite"); // Sprite2Dを取得
+		_inventoryUI = GetNode<InventoryUI>("InventoryUI"); // パスが正しいか確認
 
 		// インベントリ関連の初期化
 		if (InventoryData != null)
@@ -50,14 +50,15 @@ public partial class Player : CharacterBody2D
 			 GD.PrintErr("Player: InventoryDataが設定されていません！");
 		}
 
-		if (_inventoryUI != null)
-		{
-			_inventoryUI.Visible = false; // 初期は非表示
-		}
-		else
-		{
-			 GD.PrintErr("Player: InventoryUIが設定されていません！");
-		}
+		// InventoryUI自体は常に表示されているべきなので、Player側で非表示にしない
+		// if (_inventoryUI != null)
+		// {
+		//	 _inventoryUI.Visible = false; // ← この行は削除またはコメントアウト
+		// }
+		// else
+		// {
+		//	 GD.PrintErr("Player: InventoryUIが設定されていません！");
+		// }
 
 		UpdateHeldItemDisplay(); // 手元アイテムの初期表示
 		EmitSignal(SignalName.HotbarSelectionChanged, _selectedHotbarIndex); // UIに初期選択を通知
@@ -102,27 +103,26 @@ public partial class Player : CharacterBody2D
 		UpdateAnimation(direction);
 
 		// --- フレーム処理に追加 ---
-		HandleInventoryInput();     // インベントリ開閉 (Iキー)
+		// HandleInventoryInput();  // ★ インベントリ開閉処理は削除
 		HandleHotbarNumberKeys(); // 数字キー選択
 		UpdateHeldItemPosition(); // 手元アイテム位置調整 (オプション)
 		// -------------------------
 	}
 
-	// --- 入力処理 (ホットバー/インベントリ) ---
+	// --- 入力処理 (ホットバー) ---
 	private void HandleMouseWheel(InputEventMouseButton mouseButtonEvent)
 	{
 		int previousIndex = _selectedHotbarIndex;
-		// nullチェックを追加し、HotbarSizeが見つからない場合のエラーを防ぐ
 		int hotbarSize = InventoryData?.HotbarSize ?? 0;
-		if (hotbarSize <= 0) return; // ホットバーがない場合は何もしない
+		if (hotbarSize <= 0) return;
 
 		if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
 		{
-			_selectedHotbarIndex = (_selectedHotbarIndex - 1 + hotbarSize) % hotbarSize; // 左へラップ
+			_selectedHotbarIndex = (_selectedHotbarIndex - 1 + hotbarSize) % hotbarSize;
 		}
 		else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
 		{
-			_selectedHotbarIndex = (_selectedHotbarIndex + 1) % hotbarSize; // 右へラップ
+			_selectedHotbarIndex = (_selectedHotbarIndex + 1) % hotbarSize;
 		}
 
 		if (previousIndex != _selectedHotbarIndex)
@@ -140,7 +140,6 @@ public partial class Player : CharacterBody2D
 
 		for (int i = 0; i < hotbarSize; i++)
 		{
-			// "slot_1" から "slot_9" (または hotbarSize) までのアクションをチェック
 			if (Input.IsActionJustPressed($"slot_{i + 1}"))
 			{
 				_selectedHotbarIndex = i;
@@ -155,29 +154,27 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void HandleInventoryInput()
-	{
-		if (Input.IsActionJustPressed("inventory_toggle") && _inventoryUI != null)
-		{
-			_inventoryUI.Visible = !_inventoryUI.Visible;
-			// GetTree().Paused = _inventoryUI.Visible; // 必要なら一時停止
-		}
-	}
+	// ★ HandleInventoryInput メソッドは削除 (InventoryUI.cs で処理するため)
+	// private void HandleInventoryInput()
+	// {
+	//	 if (Input.IsActionJustPressed("inventory_toggle") && _inventoryUI != null)
+	//	 {
+	//		 // _inventoryUI.Visible = !_inventoryUI.Visible; // ← この行を削除
+	//	 }
+	// }
 
 	// --- アイテム表示 ---
 	private void UpdateHeldItemDisplay()
 	{
-		// 必要な参照がnullでないか、インデックスが範囲内かを確認
 		if (InventoryData == null || _heldItemSprite == null ||
 			InventoryData.Slots == null || InventoryData.Slots.Count <= _selectedHotbarIndex)
 		{
-			if (_heldItemSprite != null) _heldItemSprite.Visible = false; // 安全のため非表示
+			if (_heldItemSprite != null) _heldItemSprite.Visible = false;
 			return;
 		}
 
 		InventorySlot selectedSlot = InventoryData.Slots[_selectedHotbarIndex];
 
-		// スロットデータ自体がnullの場合もチェック (InitializeSlots直後など)
 		if (selectedSlot == null || selectedSlot.IsEmpty())
 		{
 			_heldItemSprite.Visible = false;
@@ -189,20 +186,15 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	// 手持ちアイテムの位置をプレイヤーの向きに合わせる (オプション)
 	private void UpdateHeldItemPosition()
 	{
 		if (_heldItemSprite == null || _animatedSprite == null) return;
-		// 例: プレイヤーが左を向いていたらアイテムも反転させる
 		_heldItemSprite.Scale = new Vector2(_animatedSprite.FlipH ? -1 : 1, 1);
-		// 例: プレイヤーの少し前に表示 (位置は調整してください)
-		// _heldItemSprite.Position = new Vector2(10 * (_animatedSprite.FlipH ? -1 : 1), 0);
 	}
 
 	// --- 既存のメソッド ---
 	private void UpdateAnimation(Vector2 direction)
 	{
-		// ... (内容は変更なし) ...
 		if (_animatedSprite == null) return;
 		bool isMoving = direction != Vector2.Zero;
 		if (isMoving)
@@ -235,7 +227,6 @@ public partial class Player : CharacterBody2D
 
 	private void HandlePushing(float delta)
 	{
-		// ... (内容は変更なし) ...
 		if (_pushArea == null) return;
 		var overlappingBodies = _pushArea.GetOverlappingBodies();
 		foreach (Node2D body in overlappingBodies)
@@ -250,7 +241,6 @@ public partial class Player : CharacterBody2D
 
 	public void Damaged(int amount)
 	{
-		// ... (内容は変更なし) ...
 		Health -= amount;
 		if (Health < 0){ Health = 0; Death();}
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
@@ -258,16 +248,12 @@ public partial class Player : CharacterBody2D
 
 	public void Death()
 	{
-		// ... (内容は変更なし) ...
 		GD.Print("Death");
 		_animatedSprite.Play("death");
-		// ここで SetPhysicsProcess(false) などを呼び出して操作不能にする
 	}
 
-	// StateUpdate ノードの timeout シグナルに接続されている想定
 	private void _on_state_update_timeout()
 	{
-		// ... (内容は変更なし) ...
 		bool healthWasChanged = false;
 		bool manaWasChanged = false;
 		if(Health < MaxHealth)
@@ -285,9 +271,6 @@ public partial class Player : CharacterBody2D
 	}
 
 	// --- 外部アクセス用 ---
-	/// <summary>
-	/// 現在選択中のホットバーインデックスを取得します
-	/// </summary>
 	public int GetSelectedHotbarIndex()
 	{
 		return _selectedHotbarIndex;
