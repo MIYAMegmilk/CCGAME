@@ -8,6 +8,4 @@ script = ExtResource("1_blhhk")
 Name = "wood_sword"
 Texture = ExtResource("1_bkgq4")
 MaxStackSize = 1
-IsWeapon = true
-HitboxShapeName = "SwordShape"
 metadata/_custom_type_script = "uid://cagff28kmg5gd"
