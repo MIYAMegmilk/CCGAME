@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CharacterStats" load_steps=2 format=3 uid="uid://bj7igcvv3isma"]
+
+[ext_resource type="Script" uid="uid://c5b2h15mygass" path="res://Enemies/CharacterStats.cs" id="1_xniik"]
+
+[resource]
+script = ExtResource("1_xniik")
+Speed = 60.0
+MaxHealth = 30.0
+Health = 30.0
+HPRegene = 0.5
+HavaMana = false
+Strength = 1.0
+Defense = 1.0
+metadata/_custom_type_script = "uid://c5b2h15mygass"

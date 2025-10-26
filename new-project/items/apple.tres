@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://bbkpw1bpfawr0"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://bbkpw1bpfawr0"]
 
+[ext_resource type="Texture2D" uid="uid://fvorug8v23u7" path="res://art/Assets/weapon/apple.png" id="1_dumep"]
 [ext_resource type="Script" uid="uid://cagff28kmg5gd" path="res://scripts/ItemData.cs" id="1_pv0u0"]
 
 [resource]
 script = ExtResource("1_pv0u0")
 Name = "apple"
+Texture = ExtResource("1_dumep")
 metadata/_custom_type_script = "uid://cagff28kmg5gd"
