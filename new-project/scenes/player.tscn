@@ -35,7 +35,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("WeaponHitbox/SwordShape:disabled")
+tracks/1/path = NodePath("WeaponHitbox/sword:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -47,7 +47,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("WeaponHitbox/SwordShape:rotation")
+tracks/2/path = NodePath("WeaponHitbox/sword:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -59,7 +59,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponHitbox/SwordShape:position")
+tracks/3/path = NodePath("WeaponHitbox/sword:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -87,7 +87,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("WeaponHitbox/SwordShape:disabled")
+tracks/1/path = NodePath("WeaponHitbox/sword:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -99,7 +99,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("WeaponHitbox/SwordShape:visible")
+tracks/2/path = NodePath("WeaponHitbox/sword:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -111,7 +111,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponHitbox/SwordShape:rotation")
+tracks/3/path = NodePath("WeaponHitbox/sword:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -123,7 +123,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("WeaponHitbox/SwordShape:position")
+tracks/4/path = NodePath("WeaponHitbox/sword:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -198,7 +198,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("WeaponHitbox/SwordShape:disabled")
+tracks/1/path = NodePath("WeaponHitbox/sword:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -210,7 +210,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("WeaponHitbox/SwordShape:visible")
+tracks/2/path = NodePath("WeaponHitbox/sword:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -222,7 +222,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponHitbox/SwordShape:rotation")
+tracks/3/path = NodePath("WeaponHitbox/sword:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -234,7 +234,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("WeaponHitbox/SwordShape:position")
+tracks/4/path = NodePath("WeaponHitbox/sword:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -294,7 +294,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("WeaponHitbox/SwordShape:disabled")
+tracks/1/path = NodePath("WeaponHitbox/sword:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -306,7 +306,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("WeaponHitbox/SwordShape:visible")
+tracks/2/path = NodePath("WeaponHitbox/sword:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -318,7 +318,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponHitbox/SwordShape:rotation")
+tracks/3/path = NodePath("WeaponHitbox/sword:rotation")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -329,8 +329,8 @@ tracks/3/keys = {
 }
 tracks/4/type = "value"
 tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("WeaponHitbox/SwordShape:position")
+tracks/4/enabled = false
+tracks/4/path = NodePath("WeaponHitbox/sword:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -431,25 +431,26 @@ scale = Vector2(0.5, 0.5)
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="WeaponHitbox" type="Area2D" parent="."]
+collision_layer = 8
 
-[node name="SwordShape" type="CollisionPolygon2D" parent="WeaponHitbox"]
+[node name="sword" type="CollisionPolygon2D" parent="WeaponHitbox"]
 visible = false
 position = Vector2(-1.9999999, -35)
 scale = Vector2(4.453, 4)
 polygon = PackedVector2Array(0, -1, 2, 0, 2, -2, 0, -3, -2, -2, -2, 0)
 
-[node name="AxeShape" type="CollisionPolygon2D" parent="WeaponHitbox"]
+[node name="axe" type="CollisionPolygon2D" parent="WeaponHitbox"]
 visible = false
 scale = Vector2(6, 6)
 polygon = PackedVector2Array(-1, -1, -2, -2, 2, -2, 1, -1)
 
-[node name="SpearShape" type="CollisionPolygon2D" parent="WeaponHitbox"]
+[node name="spear" type="CollisionPolygon2D" parent="WeaponHitbox"]
 visible = false
 scale = Vector2(2.5, 7.988)
 polygon = PackedVector2Array(-1, 0, 0, -4, 0, -4, 1, 0)
 disabled = true
 
-[node name="DeafaultShape" type="CollisionShape2D" parent="WeaponHitbox"]
+[node name="deafault" type="CollisionShape2D" parent="WeaponHitbox"]
 visible = false
 position = Vector2(0, -9)
 scale = Vector2(5, 5)

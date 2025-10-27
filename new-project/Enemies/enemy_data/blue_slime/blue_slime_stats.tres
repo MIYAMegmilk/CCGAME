@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3 uid="uid://b30ph37x4lmic"]
+
+[ext_resource type="Script" uid="uid://dl6kbkjfcegs" path="res://Enemies/EnemyStats.cs" id="1_d1cn0"]
+
+[resource]
+script = ExtResource("1_d1cn0")
+ManaRegene = 0.0
+Strength = 3.0
+Defense = 2.0
+metadata/_custom_type_script = "uid://dl6kbkjfcegs"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://bny8qjleuxmf8"]
+
+[ext_resource type="Texture2D" uid="uid://chalkglxcst3b" path="res://art/Assets/weapon/wood_sword.png" id="1_0msuk"]
+[ext_resource type="Script" uid="uid://cagff28kmg5gd" path="res://items/ItemData.cs" id="2_tn827"]
+
+[resource]
+script = ExtResource("2_tn827")
+Name = "wood_sword"
+Texture = ExtResource("1_0msuk")
+MaxStackSize = 1
+IsWeapon = true
+HitboxShapeName = "sword"
+metadata/_custom_type_script = "uid://cagff28kmg5gd"

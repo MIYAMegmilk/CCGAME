@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyBase" load_steps=3 format=3 uid="uid://b0w0oo0konuv0"]
+
+[ext_resource type="Script" uid="uid://bbi7j8tkupwf0" path="res://Enemies/EnemyBase.cs" id="1_lpsjn"]
+[ext_resource type="Resource" uid="uid://bj7igcvv3isma" path="res://Enemies/slime_stats.tres" id="1_wo23g"]
+
+[resource]
+script = ExtResource("1_lpsjn")
+EnemyName = "blue_slime"
+Stats = ExtResource("1_wo23g")
+AIScriptPath = "uid://drw2du7ptx3lt"
+metadata/_custom_type_script = "uid://bbi7j8tkupwf0"

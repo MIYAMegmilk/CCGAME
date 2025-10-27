@@ -148,55 +148,61 @@ public partial class Player : CharacterBody2D
 	}
 
 	private void HandleAttackInput()
-	{
-		// Ignore if already attacking, missing refs, or not holding a weapon
-		if (_isAttacking || _animationPlayer == null || 
-			_currentHeldItem == null || !_currentHeldItem.IsWeapon) {
-				GD.Print("???");
-				return;
-				}
+	{	
 
+		// 1. 前提条件チェック: 攻撃中でないか、必要なノードが存在するか、武器を持っているか
+		if (_isAttacking || _animationPlayer == null || 
+			_currentHeldItem == null || !_currentHeldItem.IsWeapon ||
+			_sprite == null || _weaponHitbox == null) // 安全のためnullチェックを追加
+		{
+			return; // 条件を満たさなければ処理を中断
+		}
+
+		// 2. 攻撃アクションが押された瞬間かチェック
 		if (Input.IsActionJustPressed("attack"))
 		{
-			GD.Print("ATTACK");
-			_isAttacking = true; // Start attack state
-			if(_heldItemSprite != null) _heldItemSprite.Visible = false; // Hide non-attacking item
+			_isAttacking = true; // 攻撃状態にする
+			if (_heldItemSprite != null) _heldItemSprite.Visible = false; // 手持ちアイテムを隠す
 
-			// 1. Determine direction prefix
+			// 3. プレイヤーの向きに応じたアニメーション名を決定
 			string directionPrefix;
-			if (Mathf.Abs(_lastDirection.Y) > Mathf.Abs(_lastDirection.X))
-			{ directionPrefix = (_lastDirection.Y < 0) ? "back" : "front"; }
-			else
+			if (Mathf.Abs(_lastDirection.Y) > Mathf.Abs(_lastDirection.X)) // 上下向き優先
+			{
+				directionPrefix = (_lastDirection.Y < 0) ? "back" : "front";
+			}
+			else // 左右向き優先
 			{
 				directionPrefix = "side";
-				// Ensure sprite faces correct way for side attacks
-				if(_lastDirection.X != 0 && _sprite != null) _sprite.FlipH = _lastDirection.X < 0;
+				// 横攻撃のためにスプライトの向きを確定させる
+				if (_lastDirection.X != 0) _sprite.FlipH = _lastDirection.X < 0;
 			}
 
-			// 2. Construct animation name (e.g., "front_attack_Sword")
-			// Assumes ItemData.Name correctly identifies the weapon type,
-			// or add a specific WeaponType property to ItemData.
-			string weaponTypeName = _currentHeldItem.Name ?? "Default";
-			string animationName = $"{directionPrefix}_attack_sword";
+			// アニメーション名を生成 (例: "front_attack_Sword")
+			// ItemData.Name が武器タイプ名であることを想定。専用プロパティ推奨
+			string ShapeName = _currentHeldItem.HitboxShapeName ?? "Default";
+			string animationName = $"{directionPrefix}_attack_{ShapeName}";
 
-			// 3. Check if animation exists and play
+			// 4. ★ プレイヤーが左向きなら Hitbox の Scale.X を -1 にする
+			_weaponHitbox.Scale = new Vector2(_sprite.FlipH ? -1 : 1, 1);
+
+			// 5. アニメーションが存在するか確認して再生
 			if (_animationPlayer.HasAnimation(animationName))
 			{
-				// 4. Clear hit list (can also be called by AnimationPlayer on frame 0)
+				// この振りで当てた敵リストをクリア (AnimationPlayerからも呼べる)
 				ClearHitList();
 
-				// 5. Play the animation
+				// アニメーション再生 (武器ごとの速度スケールを適用)
 				_animationPlayer.Play(animationName, customSpeed: _currentHeldItem.AnimationSpeedScale);
 
-				// NOTE: Enabling/Disabling CollisionShapes/Polygons should be handled
-				// by keyframing their 'disabled' property within the AnimationPlayer
-				// using Property Tracks for each attack animation.
+				// 注意: CollisionShapeの有効/無効化は AnimationPlayer 内で
+				//       'disabled' プロパティをキーフレーム設定して行う
 			}
-			else
+			else // アニメーションが見つからない場合
 			{
 				GD.PrintErr($"Animation not found: {animationName}");
-				_isAttacking = false; // Attack failed
-				if(_heldItemSprite != null) _heldItemSprite.Visible = true; // Show non-attacking item again
+				_isAttacking = false; // 攻撃失敗
+				_weaponHitbox.Scale = Vector2.One; // スケールを元に戻す
+				if (_heldItemSprite != null) _heldItemSprite.Visible = true; // 手持ちアイテムを再表示
 			}
 		}
 	}

@@ -1,193 +1,7 @@
-[gd_scene load_steps=22 format=3 uid="uid://dhgcsm6tal5r5"]
+[gd_scene load_steps=21 format=3 uid="uid://clb4cmkj5seri"]
 
-[ext_resource type="Texture2D" uid="uid://dvtvft5771vj0" path="res://art/characters/slime.png" id="1_bkvnc"]
-
-[sub_resource type="CSharpScript" id="CSharpScript_4isyn"]
-script/source = "// Enemy.cs
-using Godot;
-
-public partial class Enemy : CharacterBody2D
-{
-	// --- インスペクター設定 ---
-	[Export] public CharacterStats Stats { get; set; } //敵のステータスリソース slime_stats.tres
-	[Export] public 
-
-	// --- ノード参照 ---
-	private Sprite2D _sprite;
-	private AnimationPlayer _animationPlayer;
-	private Area2D _detectionArea;
-	private Area2D _hurtbox;
-	// private ProgressBar _healthBar; // オプション
-
-	// --- 状態管理 ---
-	private enum EnemyState { IDLE, CHASE, ATTACK, DEATH }
-	private EnemyState _currentState = EnemyState.IDLE;
-	private CharacterBody2D _targetPlayer = null; // 追跡対象
-	private float _currentHealth;
-
-	// --- Godotメソッド ---
-	public override void _Ready()
-	{
-		// ノード取得
-		_sprite = GetNode<Sprite2D>(\"Sprite\");
-		_animationPlayer = GetNode<AnimationPlayer>(\"AnimationPlayer\");
-		_detectionArea = GetNode<Area2D>(\"DetectionArea\");
-		_hurtbox = GetNode<Area2D>(\"Hurtbox\");
-		// _healthBar = GetNode<ProgressBar>(\"UI/HealthBar\"); // オプション
-
-		// ステータスリソースから初期値を設定
-		if (Stats != null)
-		{
-			_currentHealth = Stats.MaxHealth;
-			// _healthBar?.SetValueNoSignal(_currentHealth / Stats.MaxHealth * 100); // オプション: HPバー初期化
-		}
-		else
-		{
-			GD.PrintErr($\"Enemy {Name}: Stats リソースが設定されていません！\");
-			// デフォルト値を設定するか、エラー処理
-			_currentHealth = 10; // 仮
-		}
-
-		// シグナル接続
-		_detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
-		_detectionArea.BodyExited += OnDetectionAreaBodyExited;
-		_hurtbox.AreaEntered += OnHurtboxAreaEntered; // ★ AreaEntered を使う
-	}
-
-	public override void _PhysicsProcess(double delta)
-	{
-		// 死亡状態なら何もしない
-		if (_currentState == EnemyState.DEATH) return;
-
-		// ステートマシンによる行動制御
-		switch (_currentState)
-		{
-			case EnemyState.IDLE:
-				// GD.Print(\"Idle...\");
-				PlayAnimation(\"idle\");
-				// 索敵範囲にプレイヤーが入ったら CHASE に遷移 (シグナルで処理)
-				break;
-
-			case EnemyState.CHASE:
-				if (_targetPlayer != null)
-				{
-					// GD.Print(\"Chasing Player...\");
-					// プレイヤーの方向へ移動
-					Vector2 direction = (_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
-					Velocity = direction * (Stats?.Speed ?? 50.0f); // Statsがnullなら仮速度
-					MoveAndSlide();
-					PlayAnimation(\"walk\"); // または \"run\"
-					// 左右の向きをプレイヤーに合わせる
-					_sprite.FlipH = direction.X < 0;
-
-					// TODO: プレイヤーが攻撃範囲に入ったら ATTACK に遷移する処理
-				}
-				else
-				{
-					// ターゲットを見失ったら IDLE に戻る
-					_currentState = EnemyState.IDLE;
-					Velocity = Vector2.Zero;
-				}
-				break;
-
-			case EnemyState.ATTACK:
-				// GD.Print(\"Attacking!\");
-				PlayAnimation(\"attack\");
-				Velocity = Vector2.Zero; // 攻撃中は停止
-				// TODO: 攻撃アニメーション、ダメージ処理
-				// AnimationPlayer の animation_finished シグナルで CHASE or IDLE に戻る
-				break;
-		}
-	}
-
-	// --- シグナルハンドラ ---
-
-	// プレイヤーが索敵範囲に入った
-	private void OnDetectionAreaBodyEntered(Node2D body)
-	{
-		if (body is Player player) // Playerクラスか確認
-		{
-			_targetPlayer = player;
-			if (_currentState == EnemyState.IDLE) // アイドル中なら追跡開始
-			{
-				_currentState = EnemyState.CHASE;
-			}
-		}
-	}
-
-	// プレイヤーが索敵範囲から出た
-	private void OnDetectionAreaBodyExited(Node2D body)
-	{
-		if (body == _targetPlayer) // 出ていったのが追跡対象なら
-		{
-			_targetPlayer = null;
-			if (_currentState == EnemyState.CHASE) // 追跡中ならアイドルに戻る
-			{
-				 _currentState = EnemyState.IDLE;
-				 Velocity = Vector2.Zero;
-			}
-		}
-	}
-
-	// プレイヤーの武器判定 (Area2D) が Hurtbox (Area2D) に入った
-	private void OnHurtboxAreaEntered(Area2D area)
-	{
-		// TODO: area がプレイヤーの武器の当たり判定か確認する
-		// (例: area.IsInGroup(\"player_weapon_hitbox\"))
-		if (area.IsInGroup(\"player_weapon_hitbox\")) // 仮のグループ名
-		{
-			// TODO: ダメージ量をプレイヤー側から取得するか、固定値で与える
-			TakeDamage(10); // 仮のダメージ値
-		}
-	}
-
-	// --- メソッド ---
-
-	public void TakeDamage(float damage)
-	{
-		if (_currentState == EnemyState.DEATH) return; // 既に死んでいたら何もしない
-
-		// TODO: 防御力(Stats.Defense)などを考慮したダメージ計算
-		_currentHealth -= damage;
-		GD.Print($\"Enemy {Name} took {damage} damage. HP: {_currentHealth}/{Stats?.MaxHealth ?? _currentHealth}\");
-		// _healthBar?.SetValueNoSignal(_currentHealth / Stats.MaxHealth * 100); // オプション: HPバー更新
-
-		if (_currentHealth <= 0)
-		{
-			Die();
-		}
-		else
-		{
-			// TODO: 被ダメージアニメーションやノックバック処理
-		}
-	}
-
-	private void Die()
-	{
-		_currentState = EnemyState.DEATH;
-		GD.Print($\"Enemy {Name} died.\");
-		PlayAnimation(\"death\");
-		// 当たり判定などを無効化
-		GetNode<CollisionShape2D>(\"CollisionShape\").Disabled = true;
-		_hurtbox.GetNode<CollisionShape2D>(\"CollisionShape2D\").Disabled = true; // Hurtboxの形状名に合わせる
-		_detectionArea.GetNode<CollisionShape2D>(\"CollisionShape2D\").Disabled = true; // DetectionAreaの形状名に合わせる
-		SetPhysicsProcess(false); // 物理演算を停止
-
-		// アニメーションが終了したら消滅させる (AnimationPlayerのシグナルを使うのがより良い)
-		// await ToSignal(GetTree().CreateTimer(1.0f), Timer.SignalName.Timeout); // 1秒後に消滅 (仮)
-		// QueueFree();
-	}
-
-	// アニメーション再生ヘルパー (同じアニメーションなら再再生しない)
-	private void PlayAnimation(string animName)
-	{
-		if (_animationPlayer != null && _animationPlayer.CurrentAnimation != animName)
-		{
-			_animationPlayer.Play(animName);
-		}
-	}
-}
-"
+[ext_resource type="Texture2D" uid="uid://dvtvft5771vj0" path="res://art/characters/slime.png" id="1_3urdf"]
+[ext_resource type="Script" uid="uid://drw2du7ptx3lt" path="res://Enemies/enemy_data/blue_slime/blue_slime_AI.cs" id="1_165hk"]
 
 [sub_resource type="Animation" id="Animation_jcwuj"]
 length = 0.001
@@ -431,9 +245,6 @@ _data = {
 &"slime_side_walk": SubResource("Animation_n1bor")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_n1bor"]
-radius = 6.0
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_a5aut"]
 radius = 55.97321
 
@@ -446,11 +257,11 @@ radius = 5.0
 [node name="Enemy" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 11
-script = SubResource("CSharpScript_4isyn")
+script = ExtResource("1_165hk")
 metadata/_edit_horizontal_guides_ = [0.0]
 
 [node name="Sprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_bkvnc")
+texture = ExtResource("1_3urdf")
 hframes = 7
 vframes = 13
 region_filter_clip_enabled = true
@@ -462,7 +273,6 @@ libraries = {
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 visible = false
-shape = SubResource("CircleShape2D_n1bor")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
@@ -479,7 +289,7 @@ shape = SubResource("CircleShape2D_bkvnc")
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 4
+collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(0, 1)
