@@ -1,3 +1,4 @@
+//EnemyStats
 using Godot;
 using System;
 
@@ -9,7 +10,7 @@ public partial class EnemyStats : Resource
 	[Export] public float Health { get; set; } = 50.0f;
 	[Export] public float HPRegene { get; set; } = 1.0f; // Per second
 	
-	[Export] public bool HavaMana {get; set;} = true;
+	[Export] public bool HaveMana {get; set;} = true;
 	[Export] public float Mana { get; set; } = 0.0f;
 	[Export] public float MaxMana { get; set; } = 0.0f;
 	[Export] public float ManaRegene { get; set; } = 0.5f; // Per second

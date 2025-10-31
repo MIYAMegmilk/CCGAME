@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c5xg42nxt08ca" path="res://scripts/Player.cs" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://c3doug7hirdqp" path="res://art/characters/player.png" id="2_qhqgy"]
-[ext_resource type="Resource" uid="uid://cwcounq4r0abi" path="res://inventry/player_inventory.tres" id="2_tuyoq"]
-[ext_resource type="PackedScene" uid="uid://bin36pvismwve" path="res://inventry/InventoryUI.tscn" id="3_qhqgy"]
+[ext_resource type="Resource" uid="uid://cwcounq4r0abi" path="res://Playerdata/inventry/player_inventory.tres" id="2_tuyoq"]
+[ext_resource type="PackedScene" uid="uid://bin36pvismwve" path="res://Playerdata/inventry/InventoryUI.tscn" id="3_qhqgy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g2els"]
 radius = 3.0

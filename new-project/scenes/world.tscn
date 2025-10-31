@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ci3x22g3bf35g"]
+[gd_scene load_steps=6 format=3 uid="uid://ci3x22g3bf35g"]
 
 [ext_resource type="PackedScene" uid="uid://7cgjpj60351h" path="res://scenes/player.tscn" id="4_i7141"]
 [ext_resource type="PackedScene" uid="uid://xpixdnyl8et2" path="res://scenes/enemy.tscn" id="5_71j4m"]
+[ext_resource type="PackedScene" uid="uid://clb4cmkj5seri" path="res://Enemies/enemy_data/blue_slime/blue_slime.tscn" id="5_qfnet"]
 [ext_resource type="PackedScene" uid="uid://c41x3iyd1e2gn" path="res://scenes/control.tscn" id="6_qfnet"]
 [ext_resource type="PackedScene" uid="uid://np3kiafbuo15" path="res://world.tscn" id="7_i7141"]
 
@@ -22,3 +23,5 @@ PushForce = 700.0
 [node name="Node2D" type="Node2D" parent="."]
 
 [node name="World" parent="." instance=ExtResource("7_i7141")]
+
+[node name="Enemy" parent="." instance=ExtResource("5_qfnet")]

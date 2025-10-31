@@ -9,5 +9,6 @@ Name = "wood_sword"
 Texture = ExtResource("1_0msuk")
 MaxStackSize = 1
 IsWeapon = true
+Strength_bonus = 1
 HitboxShapeName = "sword"
 metadata/_custom_type_script = "uid://cagff28kmg5gd"

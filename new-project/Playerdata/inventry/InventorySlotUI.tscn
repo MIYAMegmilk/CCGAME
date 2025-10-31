@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://o7wmyqvtqrmr"]
 
-[ext_resource type="Script" uid="uid://brer4qduxchmv" path="res://inventry/InventorySlotUI.cs" id="1_bmn54"]
+[ext_resource type="Script" uid="uid://brer4qduxchmv" path="res://Playerdata/inventry/InventorySlotUI.cs" id="1_bmn54"]
 [ext_resource type="Texture2D" uid="uid://ckr5pmyktgdli" path="res://art/Assets/weapon/inventory_box.png" id="1_is73s"]
 
 [node name="InventorySlotUI" type="TextureRect"]

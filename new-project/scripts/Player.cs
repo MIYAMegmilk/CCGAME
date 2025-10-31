@@ -6,6 +6,8 @@ using System.Collections.Generic; // List<T> を使うため
 public partial class Player : CharacterBody2D
 {
 	// --- Inspector Settings ---
+	[Export] public CharacterStats Stats {get; set;}
+	
 	[ExportGroup("Stats")]
 	[Export] public float Speed { get; set; } = 100.0f;
 	[Export] public float MaxHealth { get; set; } = 50.0f;
@@ -373,5 +375,12 @@ public partial class Player : CharacterBody2D
 	public int GetSelectedHotbarIndex()
 	{
 		return _selectedHotbarIndex;
+	}
+	
+	public ItemData GetCurrentHeldItem()
+	{
+		// _currentHeldItem は Player.cs 内で
+		// UpdateHeldItemDisplay() によって更新されているはずの変数
+		return _currentHeldItem;
 	}
 }

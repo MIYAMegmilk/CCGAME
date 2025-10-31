@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://bin36pvismwve"]
 
-[ext_resource type="Script" uid="uid://dkmeetvrq11em" path="res://inventry/InventoryUI.cs" id="1_1utc3"]
-[ext_resource type="Resource" uid="uid://cwcounq4r0abi" path="res://inventry/player_inventory.tres" id="2_x5idx"]
-[ext_resource type="PackedScene" uid="uid://o7wmyqvtqrmr" path="res://inventry/InventorySlotUI.tscn" id="3_5t5iv"]
+[ext_resource type="Script" uid="uid://dkmeetvrq11em" path="res://Playerdata/inventry/InventoryUI.cs" id="1_1utc3"]
+[ext_resource type="Resource" uid="uid://cwcounq4r0abi" path="res://Playerdata/inventry/player_inventory.tres" id="2_x5idx"]
+[ext_resource type="PackedScene" uid="uid://o7wmyqvtqrmr" path="res://Playerdata/inventry/InventorySlotUI.tscn" id="3_5t5iv"]
 
 [node name="CanvasLayer" type="CanvasLayer" node_paths=PackedStringArray("_hotbarGrid", "_fullInventoryContainer", "_mainInventoryGrid")]
 offset = Vector2(4, 4)

@@ -7,7 +7,6 @@ public partial class Enemy : CharacterBody2D
 	
 	[Export]
 	public float Speed { get; set; } = 40.0f;
-
 	// プレイヤーを追跡中かどうかを判断するフラグ
 	private bool _isChasing = false;
 	

@@ -1,7 +1,8 @@
-[gd_scene load_steps=21 format=3 uid="uid://clb4cmkj5seri"]
+[gd_scene load_steps=23 format=3 uid="uid://clb4cmkj5seri"]
 
 [ext_resource type="Texture2D" uid="uid://dvtvft5771vj0" path="res://art/characters/slime.png" id="1_3urdf"]
 [ext_resource type="Script" uid="uid://drw2du7ptx3lt" path="res://Enemies/enemy_data/blue_slime/blue_slime_AI.cs" id="1_165hk"]
+[ext_resource type="Resource" uid="uid://b0w0oo0konuv0" path="res://Enemies/enemy_data/blue_slime/blue_slime_base.tres" id="2_lqk8b"]
 
 [sub_resource type="Animation" id="Animation_jcwuj"]
 length = 0.001
@@ -35,7 +36,7 @@ tracks/0/keys = {
 }
 
 [sub_resource type="Animation" id="Animation_jio8c"]
-resource_name = "slime_back_attack"
+resource_name = "blue_slime_back_attack"
 length = 1.4
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -230,19 +231,19 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_biruh"]
 _data = {
 &"RESET": SubResource("Animation_jcwuj"),
-&"death": SubResource("Animation_n2n7y"),
-&"slime_back_attack": SubResource("Animation_jio8c"),
-&"slime_back_damaged": SubResource("Animation_fn17s"),
-&"slime_back_idle": SubResource("Animation_biruh"),
-&"slime_back_walk": SubResource("Animation_a5aut"),
-&"slime_front_attack": SubResource("Animation_ikgc1"),
-&"slime_front_damaged": SubResource("Animation_un6pf"),
-&"slime_front_idle": SubResource("Animation_wdetw"),
-&"slime_front_walk": SubResource("Animation_bkvnc"),
-&"slime_side_attack": SubResource("Animation_da7ms"),
-&"slime_side_damaged": SubResource("Animation_0hlsd"),
-&"slime_side_idle": SubResource("Animation_4isyn"),
-&"slime_side_walk": SubResource("Animation_n1bor")
+&"blue_slime_back_attack": SubResource("Animation_jio8c"),
+&"blue_slime_back_damaged": SubResource("Animation_fn17s"),
+&"blue_slime_back_idle": SubResource("Animation_biruh"),
+&"blue_slime_back_walk": SubResource("Animation_a5aut"),
+&"blue_slime_front_attack": SubResource("Animation_ikgc1"),
+&"blue_slime_front_damaged": SubResource("Animation_un6pf"),
+&"blue_slime_front_idle": SubResource("Animation_wdetw"),
+&"blue_slime_front_walk": SubResource("Animation_bkvnc"),
+&"blue_slime_side_attack": SubResource("Animation_da7ms"),
+&"blue_slime_side_damaged": SubResource("Animation_0hlsd"),
+&"blue_slime_side_idle": SubResource("Animation_4isyn"),
+&"blue_slime_side_walk": SubResource("Animation_n1bor"),
+&"death": SubResource("Animation_n2n7y")
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_a5aut"]
@@ -254,10 +255,21 @@ radius = 7.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_ikgc1"]
 radius = 5.0
 
-[node name="Enemy" type="CharacterBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_lqk8b"]
+
+[node name="Enemy" type="CharacterBody2D" node_paths=PackedStringArray("_animationPlayer", "_sprite", "_detectionArea", "_pushArea", "_hitbox", "_attackArea", "_navAgent")]
+position = Vector2(100, 100)
 collision_layer = 4
 collision_mask = 11
 script = ExtResource("1_165hk")
+_animationPlayer = NodePath("AnimationPlayer")
+_sprite = NodePath("Sprite")
+_detectionArea = NodePath("DetectionArea")
+_pushArea = NodePath("PushArea")
+_hitbox = NodePath("Hitbox")
+_attackArea = NodePath("AttackArea")
+_navAgent = NodePath("NavigationAgent2D")
+Base = ExtResource("2_lqk8b")
 metadata/_edit_horizontal_guides_ = [0.0]
 
 [node name="Sprite" type="Sprite2D" parent="."]
@@ -295,3 +307,16 @@ collision_mask = 8
 position = Vector2(0, 1)
 shape = SubResource("CircleShape2D_ikgc1")
 debug_color = Color(0.9513474, 2.5990605e-06, 0.5665329, 0.41960785)
+
+[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CircleShape2D_lqk8b")
+debug_color = Color(0.6852343, 0.50126386, 0, 0.41960785)
+
+[node name="DamageArea" type="Area2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DamageArea"]
+polygon = PackedVector2Array(0, 10, 7, 7, 10, 0, 7, -7, 0, -10, -7, -7, -10, 0, -7, 7)
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

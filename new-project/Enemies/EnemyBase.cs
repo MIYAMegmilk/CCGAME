@@ -1,3 +1,4 @@
+//EnemyBase.cs
 using Godot;
 using System;
 
@@ -5,19 +6,22 @@ using System;
 public partial class EnemyBase : Resource
 {
 	[ExportGroup("Basic Info")]
+	[Export] public string EnemyTag { get; set; } = "Enemy Tag";
 	[Export] public float DetectionSize {get;set;} = 60.0f;
 	[Export] public float DetectionAngle { get; set; } = 60.0f;
-	[Export] public string EnemyName { get; set; } = "New Enemy";
-	[Export] public PackedScene EnemyScene { get; set; }
-
+	[Export] public float AttackRange { get; set; } = 6.0f;//ピクセル単位
+	
+	[ExportGroup("LootTable")]
+	[Export] public LootTable LootTable { get; set; }
+	
 	[ExportGroup("Stats")]
 	[Export] // 既存の CharacterStats リソースをここにリンク
-	public CharacterStats Stats { get; set; }
+	public EnemyStats Stats { get; set; }
 
 	[ExportGroup("Behavior")]
 	[Export(PropertyHint.File, "*.cs")] //行動パターンを書いた C# スクリプトへのパス
 	public string AIScriptPath { get; set; }
-	// または、AI用の Resource を別途作る場合:
+	// 
 	// [Export] public EnemyAIBehavior AIBehavior { get; set; }
 
 	//[ExportGroup("Loot")]

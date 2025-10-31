@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="LootTable" load_steps=3 format=3 uid="uid://dn756diihb8sw"]
+
+[ext_resource type="Script" uid="uid://cu1ki30kppq5w" path="res://Enemies/LootEntry.cs" id="1_wbveo"]
+[ext_resource type="Script" uid="uid://ehjhgwr7at6k" path="res://Enemies/LootTable.cs" id="2_43rpb"]
+
+[resource]
+script = ExtResource("2_43rpb")
+metadata/_custom_type_script = "uid://ehjhgwr7at6k"

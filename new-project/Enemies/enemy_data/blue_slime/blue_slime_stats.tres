@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_d1cn0")
+Speed = 30.0
 ManaRegene = 0.0
 Strength = 3.0
 Defense = 2.0

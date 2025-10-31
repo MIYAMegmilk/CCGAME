@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PlayerInventory" load_steps=7 format=3 uid="uid://cwcounq4r0abi"]
 
-[ext_resource type="Script" uid="uid://tdxv5mmaqv0g" path="res://inventry/InventorySlot.cs" id="1_hl5a7"]
-[ext_resource type="Script" uid="uid://gu6rkld17u8p" path="res://inventry/PlayerInventory.cs" id="2_8h41w"]
+[ext_resource type="Script" uid="uid://tdxv5mmaqv0g" path="res://Playerdata/inventry/InventorySlot.cs" id="1_hl5a7"]
+[ext_resource type="Script" uid="uid://gu6rkld17u8p" path="res://Playerdata/inventry/PlayerInventory.cs" id="2_8h41w"]
 [ext_resource type="Resource" uid="uid://bny8qjleuxmf8" path="res://items/ItemData/wood_sword.tres" id="2_u0876"]
 [ext_resource type="Resource" uid="uid://bbkpw1bpfawr0" path="res://items/ItemData/apple.tres" id="3_u0876"]
 
