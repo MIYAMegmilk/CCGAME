@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PlayerInventory" load_steps=7 format=3 uid="uid://cwcounq4r0abi"]
+[gd_resource type="Resource" load_steps=7 format=3 uid="uid://cwcounq4r0abi"]
 
 [ext_resource type="Script" uid="uid://tdxv5mmaqv0g" path="res://Playerdata/inventry/InventorySlot.cs" id="1_hl5a7"]
 [ext_resource type="Script" uid="uid://gu6rkld17u8p" path="res://Playerdata/inventry/PlayerInventory.cs" id="2_8h41w"]
@@ -19,5 +19,5 @@ metadata/_custom_type_script = "uid://tdxv5mmaqv0g"
 
 [resource]
 script = ExtResource("2_8h41w")
-Slots = Array[ExtResource("1_hl5a7")]([SubResource("Resource_6qm2h"), SubResource("Resource_bc7aj")])
+Slots = [SubResource("Resource_6qm2h"), SubResource("Resource_bc7aj")]
 metadata/_custom_type_script = "uid://gu6rkld17u8p"
