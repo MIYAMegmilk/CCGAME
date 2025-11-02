@@ -7,8 +7,10 @@ public partial class EnemyBase : Resource
 {
 	[ExportGroup("Basic Info")]
 	[Export] public string EnemyTag { get; set; } = "Enemy Tag";
-	[Export] public float DetectionSize {get;set;} = 60.0f;
-	[Export] public float DetectionAngle { get; set; } = 60.0f;
+	[Export] public float DetectionSize {get;set;} = 300.0f;
+	[Export] public float DetectionAngle { get; set; } = 50.0f;
+	[Export] public bool Perceptual { get; set; } = false;
+	[Export] public float SpiritArea { get; set; } = 150.0f;
 	[Export] public float AttackRange { get; set; } = 6.0f;//ピクセル単位
 	
 	[ExportGroup("LootTable")]
