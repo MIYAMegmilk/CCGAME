@@ -3,15 +3,15 @@ using Godot;
 
 public partial class WorldManager : Node2D
 {
-	// --- インスペクターから設定 ---
-	[Export] public TileMapLayer TerrainLayer { get; set; } // 壁を配置するレイヤー
-	[Export] public TileMapLayer WallLayer { get; set; }    // 床（背景壁）を配置するレイヤー
+	// ★ 変数名を分かりやすく変更
+	[Export] public TileMapLayer FloorLayer { get; set; } // 床 (Z=-1, ナビメッシュ用)
+	[Export] public TileMapLayer WallLayer { get; set; }  // 壁 (Z=0, コリジョン用)
+	
 	[Export] public int TileSourceId { get; set; } = 0;
-
-	// ★ 変数名を変更 & 値を逆に設定
-	[Export] public Vector2I WallTileAtlasCoords { get; set; } = new Vector2I(0, 0); // 以前のStoneTile (壁用)
-	[Export] public Vector2I FloorTileAtlasCoords { get; set; } = new Vector2I(1, 0); // 以前のWallTile (床用)
-	// ----------------------------
+	
+	// アトラス座標 (tileset.png の例)
+	[Export] public Vector2I WallTileAtlasCoords { get; set; } = new Vector2I(3, 0); // stone.png (壁)
+	[Export] public Vector2I FloorTileAtlasCoords { get; set; } = new Vector2I(0, 0); // dirt.png (床)
 
 	[Export] public ulong WorldSeed { get; set; } = 12345;
 
@@ -20,7 +20,6 @@ public partial class WorldManager : Node2D
 
 	public override void _Ready()
 	{
-		// ... (MapGeneratorの呼び出しは同じ) ...
 		GD.Print($"マップ生成を開始します... Seed: {WorldSeed}");
 		MapGenerator generator = new MapGenerator(MAP_WIDTH, MAP_HEIGHT, WorldSeed);
 		int[,] mapData = generator.GenerateMap();
@@ -30,13 +29,15 @@ public partial class WorldManager : Node2D
 
 	private void DrawMap(int[,] mapData)
 	{
-		if (TerrainLayer == null || WallLayer == null)
+		// ★ 変数名を変更
+		if (WallLayer == null || FloorLayer == null)
 		{
-			GD.PrintErr("TileMapLayerがインスペクターで設定されていません。");
+			GD.PrintErr("WallLayer または FloorLayer がインスペクターで設定されていません。");
 			return;
 		}
-		TerrainLayer.Clear();
 		WallLayer.Clear();
+		FloorLayer.Clear();
+
 		GD.Print("タイルを配置中...");
 		int offsetX = MAP_WIDTH / 2;
 		int offsetY = MAP_HEIGHT / 2;
@@ -47,16 +48,15 @@ public partial class WorldManager : Node2D
 			{
 				Vector2I tileMapCoords = new Vector2I(x - offsetX, y - offsetY);
 
-				// ★ 割り当てを逆にする
-				if (mapData[x, y] == 0) // 1 = 壁
+				if (mapData[x, y] == 1) // 1 = 壁
 				{
-					// TerrainLayerに壁タイルを配置
-					TerrainLayer.SetCell(tileMapCoords, TileSourceId, WallTileAtlasCoords);
+					// ★ WallLayer に壁タイルを配置
+					WallLayer.SetCell(tileMapCoords, TileSourceId, WallTileAtlasCoords);
 				}
-				else // 0 = 空間
+				else // 0 = 空間 (床)
 				{
-					// WallLayerに床タイルを配置
-					WallLayer.SetCell(tileMapCoords, TileSourceId, FloorTileAtlasCoords);
+					// ★ FloorLayer に床タイルを配置
+					FloorLayer.SetCell(tileMapCoords, TileSourceId, FloorTileAtlasCoords);
 				}
 			}
 		}

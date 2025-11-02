@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_lpsjn")
 EnemyTag = "blue_slime"
+DetectionSize = 400.0
 AttackRange = 20.0
 LootTable = ExtResource("1_ln8fq")
 Stats = ExtResource("1_wo23g")

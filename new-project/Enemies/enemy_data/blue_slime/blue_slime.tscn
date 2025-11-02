@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://clb4cmkj5seri"]
+[gd_scene load_steps=24 format=3 uid="uid://clb4cmkj5seri"]
 
 [ext_resource type="Texture2D" uid="uid://dvtvft5771vj0" path="res://art/characters/slime.png" id="1_3urdf"]
 [ext_resource type="Script" uid="uid://drw2du7ptx3lt" path="res://Enemies/enemy_data/blue_slime/blue_slime_AI.cs" id="1_165hk"]
@@ -257,12 +257,13 @@ radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lqk8b"]
 
-[node name="Enemy" type="CharacterBody2D" node_paths=PackedStringArray("_animationPlayer", "_sprite", "_detectionArea", "_pushArea", "_hitbox", "_attackArea", "_navAgent")]
-position = Vector2(100, 100)
+[sub_resource type="CircleShape2D" id="CircleShape2D_erlut"]
+radius = 4.1231055
+
+[node name="Enemy" type="CharacterBody2D" node_paths=PackedStringArray("_animationPlayer", "_sprite", "_detectionArea", "_pushArea", "_hitbox", "_attackArea", "_navAgent", "_fovDebugDisplay", "_pathDebugDisplay")]
+position = Vector2(100, 30)
 collision_layer = 4
-collision_mask = 11
 script = ExtResource("1_165hk")
-Base = ExtResource("2_lqk8b")
 _animationPlayer = NodePath("AnimationPlayer")
 _sprite = NodePath("Sprite")
 _detectionArea = NodePath("DetectionArea")
@@ -270,6 +271,9 @@ _pushArea = NodePath("PushArea")
 _hitbox = NodePath("Hitbox")
 _attackArea = NodePath("AttackArea")
 _navAgent = NodePath("NavigationAgent2D")
+_fovDebugDisplay = NodePath("FOVDebugDisplay")
+_pathDebugDisplay = NodePath("PathDebugDisplay")
+Base = ExtResource("2_lqk8b")
 metadata/_edit_horizontal_guides_ = [0.0]
 
 [node name="Sprite" type="Sprite2D" parent="."]
@@ -283,10 +287,8 @@ libraries = {
 &"": SubResource("AnimationLibrary_biruh")
 }
 
-[node name="CollisionShape" type="CollisionShape2D" parent="."]
-visible = false
-
 [node name="DetectionArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -294,14 +296,18 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_a5aut")
 
 [node name="PushArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PushArea"]
 position = Vector2(0, 1)
 shape = SubResource("CircleShape2D_bkvnc")
 
 [node name="Hitbox" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
-collision_mask = 8
+collision_mask = 9
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(0, 1)
@@ -309,14 +315,31 @@ shape = SubResource("CircleShape2D_ikgc1")
 debug_color = Color(0.9513474, 2.5990605e-06, 0.5665329, 0.41960785)
 
 [node name="AttackArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 shape = SubResource("CircleShape2D_lqk8b")
 debug_color = Color(0.6852343, 0.50126386, 0, 0.41960785)
 
 [node name="DamageArea" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DamageArea"]
 polygon = PackedVector2Array(0, 10, 7, 7, 10, 0, 7, -7, 0, -10, -7, -7, -10, 0, -7, 7)
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 43.39
+path_return_max_radius = 20.0
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_erlut")
+
+[node name="FOVDebugDisplay" type="Polygon2D" parent="."]
+color = Color(0.92542523, 0.7748725, 0.9926396, 0.14117648)
+
+[node name="PathDebugDisplay" type="Line2D" parent="."]
+top_level = true
+width = 2.0
+default_color = Color(0.7490196, 0, 0.7529412, 0.7294118)
+sharp_limit = 100.0
