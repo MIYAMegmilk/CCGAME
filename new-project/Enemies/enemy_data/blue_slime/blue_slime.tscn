@@ -264,6 +264,7 @@ radius = 4.1231055
 position = Vector2(100, 30)
 collision_layer = 4
 script = ExtResource("1_165hk")
+Base = ExtResource("2_lqk8b")
 _animationPlayer = NodePath("AnimationPlayer")
 _sprite = NodePath("Sprite")
 _detectionArea = NodePath("DetectionArea")
@@ -273,7 +274,6 @@ _attackArea = NodePath("AttackArea")
 _navAgent = NodePath("NavigationAgent2D")
 _fovDebugDisplay = NodePath("FOVDebugDisplay")
 _pathDebugDisplay = NodePath("PathDebugDisplay")
-Base = ExtResource("2_lqk8b")
 metadata/_edit_horizontal_guides_ = [0.0]
 
 [node name="Sprite" type="Sprite2D" parent="."]
